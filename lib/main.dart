@@ -3,10 +3,8 @@ import 'package:foodi_app/dummy_data.dart';
 import 'package:foodi_app/models/meal.dart';
 import 'package:foodi_app/screens/bottom_bar_screen.dart';
 import 'package:foodi_app/screens/category_meal_screen.dart';
-import 'package:foodi_app/screens/category_overview_screen.dart';
 import 'package:foodi_app/screens/filter_screen.dart';
 import 'package:foodi_app/screens/meal_details_screen.dart';
-import 'package:foodi_app/screens/tab_view_screen.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,7 +21,9 @@ class _MyAppState extends State<MyApp> {
     'vegetarian': false,
   };
   List<Meal> _availableMeals = DUMMY_MEALS;
+  List<Meal> _favouriteMeals = [];
 
+  // -------- for setting filters to the meal ------
   void _setFilters(Map<String, bool> filterData) {
     setState(() {
       _filters = filterData;
@@ -43,6 +43,27 @@ class _MyAppState extends State<MyApp> {
         return true;
       }).toList();
     });
+  }
+
+  // -------- for adding/removing favourite meals -----------
+  void _toggleFavourite(String mealId) {
+    final existingIndex =
+        _favouriteMeals.indexWhere((meal) => meal.id == mealId);
+    if (existingIndex >= 0) {
+      setState(() {
+        _favouriteMeals.removeAt(existingIndex);
+      });
+    } else {
+      setState(() {
+        _favouriteMeals
+            .add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
+      });
+    }
+  }
+
+  // --- for getting if the meal is favourite or not ----
+  bool isMealFavourite(String mealId) {
+    return _favouriteMeals.any((meal) => meal.id == mealId);
   }
 
   @override
@@ -67,16 +88,24 @@ class _MyAppState extends State<MyApp> {
                   fontWeight: FontWeight.bold),
             ),
       ),
-      home: BottomBarScreen(),
+//      home: BottomBarScreen(),
+      initialRoute: '/',
       routes: {
+        '/': (ctx) => BottomBarScreen(_favouriteMeals),
         CategoryMealScreen.routeName: (ctx) =>
             CategoryMealScreen(_availableMeals),
-        MealDetailScreen.routeName: (ctx) => MealDetailScreen(),
-        BottomBarScreen.routeName: (ctx) => BottomBarScreen(),
+        MealDetailScreen.routeName: (ctx) =>
+            MealDetailScreen(_toggleFavourite, isMealFavourite),
         FilterScreen.routeName: (ctx) => FilterScreen(_setFilters, _filters),
+        BottomBarScreen.routeName: (ctx) => BottomBarScreen(
+              _favouriteMeals,
+            ),
       },
       onUnknownRoute: (settings) {
-        return MaterialPageRoute(builder: (ctx) => CategoryOverviewScreen());
+        return MaterialPageRoute(
+            builder: (ctx) => BottomBarScreen(
+                  _favouriteMeals,
+                ));
       },
     );
   }

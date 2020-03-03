@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodi_app/screens/bottom_bar_screen.dart';
-import 'package:foodi_app/screens/category_overview_screen.dart';
 import 'package:foodi_app/screens/filter_screen.dart';
 
 class MainDrawer extends StatelessWidget {
