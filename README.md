@@ -1,6 +1,6 @@
 # foodi_app
 
-A new Flutter application.
+IIT Flutter App - Get your favorites recipes in your hands!!
 
 ## Getting Started
 
